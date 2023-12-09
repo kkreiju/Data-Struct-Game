@@ -15,8 +15,8 @@
  * 	
  * 	score interval = velocity++
  * 	name above dino following its top as always bisag mo saka pana or mo naog
- * 	attach the birds
- * 	randomizer for obstacles
+ * 	attach the birds //
+ * 	randomizer for obstacles //
  * 
  * */
 public class Main {
