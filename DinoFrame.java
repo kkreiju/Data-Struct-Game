@@ -289,7 +289,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 			obstacle5Border.setBorder(new LineBorder(Color.MAGENTA));
 			break;
 		case 'g':
-			score = 500;
+			score = 280;
 			break;
 		case 'q':
 			System.exit(0);
@@ -452,6 +452,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 			//implement the obs1-5 thingy here
 			if (score >= 300 && score < 500) {
 				velocity = 5;
+				changeBackground();
 			} else if (score >= 500) {
 				velocity = 6;
 				if (obstacleGenerator.size() == 3) {
@@ -461,6 +462,27 @@ public class DinoFrame extends JFrame implements KeyListener {
 				}
 			}
 		}
+	}
+	
+	private void changeBackground() {
+		this.setContentPane(new JLabel(new ImageIcon("textures\\backgroundNight.png")));
+		this.add(dino);
+		this.add(dinoBorder);
+		//name
+		this.add(scoreDisplay);
+		this.add(obstacle1);
+		this.add(obstacle1Border);
+		this.add(obstacle2);
+		this.add(obstacle2Border);
+		this.add(obstacle3);
+		this.add(obstacle3Border);
+		this.add(obstacle4);
+		this.add(obstacle4Border);
+		this.add(obstacle5);
+		this.add(obstacle5Border);
+		this.add(clouds1);
+		this.add(clouds2);
+		this.add(clouds3);
 	}
 
 	private class obstacleGeneratorTimerListener implements ActionListener {

@@ -9,7 +9,9 @@
  * 
  * Problems:
  * 
- * 	color burned gui (still needs to be optimized)
+ * 	remodel small cactus
+ * 	smoothen day and night effects
+ * 	hoy ang leveling wa pa nasugdan ataya oy
  * 
  * Goals:
  * 	
