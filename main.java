@@ -15,6 +15,7 @@
  * 	
  * 	score interval = velocity++
  * 	ilisdan ang mga borders into certain obstacle1-5 nga mo gawas sa screen
+ * 	levels 1-10
  * 	name above dino following its top as always bisag mo saka pana or mo naog
  * 
  * */
