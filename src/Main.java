@@ -6,25 +6,17 @@
  * 	Sherwill Mae Alivio
  * 	Shine Florence Padillo
  * 	Anthony Peralta
- * 
- * Problems:
- * 
- * 	smoothen day and night effects
- * 	double cactus in level 2
- * 
- * Goals:
- * 	
- * 	score interval = velocity++
- * 	levels 1-10
- * 	name above dino following its top as always bisag mo saka pana or mo naog
- * 
+
+name (boolean on constructor)
+key listener sa menu pls
+backbutton
  * */
 public class Main {
 
-	public static void main(String[] args) {
-		System.out.println("Dino Jump");
-                DinoJumpMenu dj = new DinoJumpMenu();
-                dj.show();
-	}
+    public static void main(String[] args) {
+        System.out.println("Dino Jump");
+        DinoJumpMenu dj = new DinoJumpMenu();
+        dj.show();
+    }
 
 }

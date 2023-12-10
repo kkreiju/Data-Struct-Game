@@ -4,6 +4,8 @@
  */
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,19 +14,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
-public class DinoJumpMenu extends javax.swing.JFrame {
+public class DinoJumpMenu extends javax.swing.JFrame implements KeyListener {
 
-    public DinosaurGame dinosaurGame;
-    private String name;
-    private JLabel nameLabel;
+    private DinosaurName dinoName;
+    public String name;
     ImageIcon logo = new ImageIcon("src\\textures\\icon.jpg");
+    JLabel n = new JLabel("DinoJump!");
 
     public DinoJumpMenu() {
-        nameLabel = new JLabel("Dinosaur Name: ");
-        nameLabel.setFont(new java.awt.Font("Sitka Small", 0, 12));
-        nameLabel.setAlignmentY(0.7F);
-        nameLabel.setPreferredSize(new java.awt.Dimension(136, 13));
-        dinosaurGame = new DinosaurGame();
+        dinoName = new DinosaurName();
         initComponents();
         setTitle("Dino Jump!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -156,7 +154,7 @@ public class DinoJumpMenu extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Dinosaur Name: T-rex");
+        jLabel1.setText("Dinosaur Name: T-Rex");
         jLabel1.setAlignmentY(0.7F);
         jLabel1.setPreferredSize(new java.awt.Dimension(136, 13));
         jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 30, 410, 46));
@@ -191,8 +189,10 @@ public class DinoJumpMenu extends javax.swing.JFrame {
             case 0: // Change Name
                 String newName = JOptionPane.showInputDialog(this, "Enter new name (max 10 characters):");
                 if (newName != null) {
-                    if (newName.length() <= 10) {
-                        dinosaurGame.setDinosaurName(newName);
+                    if (newName.length() == 0) {
+                        JOptionPane.showMessageDialog(this, "Error: Name must not be empty.");
+                    } else if (newName.length() >= 1 && newName.length() <= 10) {
+                        dinoName.setDinosaurName(newName);
                         updateNameLabel();
                     } else {
                         JOptionPane.showMessageDialog(this, "Error: Name must be 10 characters or fewer.");
@@ -212,41 +212,48 @@ public class DinoJumpMenu extends javax.swing.JFrame {
                 + "1. Press the 'Start' button to begin the game.\n"
                 + "2. Use the space bar / up key to make the dinosaur jump.\n"
                 + "3. Use the down key to make the dinosaur crouch.\n"
-                + "4. Avoid obstacles and try to achieve a high score.\n\n"
+                + "4. Press 'Backspace' when you like to exit the game.\n"
+                + "5. Avoid obstacles and try to achieve a high score.\n\n"
                 + "Have fun playing!";
         JOptionPane.showMessageDialog(this, instructions, "How to Play", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void updateNameLabel() {
-        if (nameLabel != null) {
-            nameLabel.setText("Dinosaur Name: " + dinosaurGame.getDinosaurName());
-            jLabel1.setText("Dinosaur Name: " + dinosaurGame.getDinosaurName());
-            setName(dinosaurGame.getDinosaurName());
-            System.out.println(getName());
+        if (n != null) {
+            jLabel1.setText("Dinosaur Name: " + dinoName.getDinosaurName());
+            setName(dinoName.getDinosaurName());
         }
     }
 
-    public String getName(){
-        return name;
-    }
-    
-    public void setName(String n){
-        this.name = n;
-    }
-    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 
         System.exit(0);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        DinoGame dg = new DinoGame();
+        dg.name = dinoName.getDinosaurName();
         dispose();
-        new DinoFrame();
+        dg.nameDisplay.setText(dg.name);
+        String label = jLabel1.getText();
+        if(name != null){
+            label = name;
+        }
+        String prefix = "Dinosaur Name: ";
+        if(label.startsWith(prefix)){
+            label = label.substring(prefix.length());
+        }
+        dg.nameDisplay.setText(label);
+        dg.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        String creditsMessage = "CREATORS: Arjay Niño Sauguisa, Sherwill Mae Alivio, Anthony Peralta, Shine Florence Padillo";
+        String creditsMessage = "Eclipse:\n\n"
+                + "Arjay Nino Saguisa\n"
+                + "Sherwill Mae Alivio\n"
+                + "Shine Florence Padillo\n"
+                + "Anthony Peralta\n";
         JOptionPane.showMessageDialog(this, creditsMessage, "Credits", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -308,7 +315,7 @@ public class DinoJumpMenu extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -319,13 +326,27 @@ public class DinoJumpMenu extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        
+    }
 }
 
-class DinosaurGame {
+class DinosaurName {
 
     private String dinosaurName;
 
-    public DinosaurGame() {
+    public DinosaurName() {
         dinosaurName = "T-Rex";
     }
 
@@ -333,7 +354,7 @@ class DinosaurGame {
         return dinosaurName;
     }
 
-    public void setDinosaurName(String dinosaurName) {
-        this.dinosaurName = dinosaurName;
+    public void setDinosaurName(String dn) {
+        this.dinosaurName = dn;
     }
 }

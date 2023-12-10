@@ -20,7 +20,7 @@ import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
 @SuppressWarnings("serial")
-public class DinoFrame extends JFrame implements KeyListener {
+public class DinoGame extends JFrame implements KeyListener {
 
     ImageIcon logo = new ImageIcon("src\\textures\\icon.jpg");
 
@@ -71,9 +71,13 @@ public class DinoFrame extends JFrame implements KeyListener {
 
     // hud
     JLabel scoreDisplay = new JLabel();
+    JLabel highScoreDisplay = new JLabel();
     int score;
     JLabel nameDisplay = new JLabel();
+    JLabel levelDisplay = new JLabel();
+    
     String name;
+    int highScore = 0;
 
     // entity borders
     JLabel dinoBorder = new JLabel();
@@ -139,17 +143,12 @@ public class DinoFrame extends JFrame implements KeyListener {
     // for levels
     int velocity;
     int summonDistance;
-    int additionalDistance;
-    int additionalDistanceMin;
-    int additionalDistanceMax;
     int backFrame;
     int obstacle;
     int obstacleLimit;
     ArrayList<Integer> obstacleGenerator = new ArrayList<Integer>();
-
-    // reminders
-    // PLEASE PRESS JUMP TO PLAY
-    DinoFrame() {
+    
+    DinoGame() {
         // general options
         this.setTitle("Dino Jump!");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -161,6 +160,17 @@ public class DinoFrame extends JFrame implements KeyListener {
         // score
         scoreDisplay.setBounds(750, 0, 70, 20);
         scoreDisplay.setForeground(Color.WHITE);
+        highScoreDisplay.setBounds(500, 0, 120, 20);
+        highScoreDisplay.setForeground(Color.WHITE);
+        
+        // name
+        nameDisplay.setBounds(32, 200, 70, 20);
+        nameDisplay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nameDisplay.setForeground(Color.WHITE);
+        
+        //level
+        levelDisplay.setBounds(650, 0, 70, 20);
+        levelDisplay.setForeground(Color.WHITE);
 
         // render images
         dino.setIcon(dinoImage);
@@ -186,9 +196,13 @@ public class DinoFrame extends JFrame implements KeyListener {
         // add labels to frame
         this.add(dino);
         this.add(dinoBorder);
-        // name
+        this.add(nameDisplay);
         scoreDisplay.setText("Score: 0");
+        levelDisplay.setText("Level: 1");
+        highScoreDisplay.setText("High Score: 0");
         this.add(scoreDisplay);
+        this.add(highScoreDisplay);
+        this.add(levelDisplay);
         this.add(obstacle1);
         this.add(obstacle1Border);
         this.add(obstacle2);
@@ -214,13 +228,7 @@ public class DinoFrame extends JFrame implements KeyListener {
     }
 
     public void initialPosition() {
-        summonDistance = 1000;
-        additionalDistance = 0;
-        additionalDistanceMin = 0;
-        additionalDistanceMax = 0;
-        DinoJumpMenu dj = new DinoJumpMenu();
-        name = dj.getName();
-        System.out.println(name);
+        summonDistance = 1000;     
 
         score = 0;
         dinoX = 35;
@@ -232,7 +240,7 @@ public class DinoFrame extends JFrame implements KeyListener {
         dinoCrouchBorderHeight = 34;
         dinoJumpLimit = 30;
 
-        cactusX = 900; // black sheep (i changed cactusx to summon distance)
+        cactusX = 900;
         cactusY = 217;
         smallCactusBorderX = summonDistance + 27;
         smallCactusBorderY = cactusY + 40;
@@ -360,6 +368,7 @@ public class DinoFrame extends JFrame implements KeyListener {
                     dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
                 }
                 break;
+                /*
             case 'd':
                 dinoBorder.setBorder(new LineBorder(Color.RED));
                 cactusBorder.setBorder(new LineBorder(Color.RED));
@@ -370,18 +379,25 @@ public class DinoFrame extends JFrame implements KeyListener {
                 obstacle4Border.setBorder(new LineBorder(Color.CYAN));
                 obstacle5Border.setBorder(new LineBorder(Color.MAGENTA));
                 break;
-            case 'g':
-                score = 499;
-                break;
+            
             case 'q':
                 System.exit(0);
+                break;
+                */
+            case '\b':
+                dispose();
+                DinoJumpMenu djm = new DinoJumpMenu();
+                DinosaurName dn = new DinosaurName();
+                dn.setDinosaurName(name);
+                djm.name = name;
+                djm.jLabel1.setText("Dinosaur Name: " + dn.getDinosaurName());
+                djm.setVisible(true);
                 break;
         }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-
         if (playing) {
             switch (e.getKeyCode()) {
                 case 38:
@@ -427,6 +443,7 @@ public class DinoFrame extends JFrame implements KeyListener {
                             }
                             dinoBorder.setBounds(dinoX, dino.getY() + dinoCrouchY, dinoCrouchBorderWidth,
                                     dinoCrouchBorderHeight);
+                            nameDisplay.setLocation(32, 220);
                         }
                     } else if (onAir && dino.getY() < 130) {
                         jump = true;
@@ -448,6 +465,7 @@ public class DinoFrame extends JFrame implements KeyListener {
             crouchRendered = false;
             dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStand.png"));
             dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
+            nameDisplay.setLocation(32, 200);
         }
     }
 
@@ -459,10 +477,12 @@ public class DinoFrame extends JFrame implements KeyListener {
                 if (!jump) {
                     dinoBorder.setLocation(dino.getX(), dino.getY() - 10);
                     dino.setLocation(dino.getX(), dino.getY() - 10);
+                    nameDisplay.setLocation(nameDisplay.getX(), nameDisplay.getY() - 10);
                     onAir = true;
                 } else {
                     dinoBorder.setLocation(dino.getX(), dino.getY() + 7);
                     dino.setLocation(dino.getX(), dino.getY() + 7);
+                    nameDisplay.setLocation(nameDisplay.getX(), nameDisplay.getY() + 7);
                 }
 
                 if (dino.getY() <= dinoJumpLimit) {
@@ -472,6 +492,7 @@ public class DinoFrame extends JFrame implements KeyListener {
                     dino.setLocation(dino.getX(), dinoY);
                     dinoBorder.setBounds(dinoBorder.getX(), dinoBorder.getY(), dinoStandBorderWidth,
                             dinoStandBorderHeight);
+                    nameDisplay.setLocation(32, 200);
                     jump = false;
                     onAir = false;
                     jumpTimer.stop();
@@ -532,6 +553,10 @@ public class DinoFrame extends JFrame implements KeyListener {
                 obstacleGenerator.clear();
                 stopBackgroundMusic();
                 playGameOverSound();
+                if(highScore < score){
+                    highScore = score;
+                    highScoreDisplay.setText("High Score: " + highScore);
+                }
             }
         }
 
@@ -560,9 +585,7 @@ public class DinoFrame extends JFrame implements KeyListener {
         public void actionPerformed(ActionEvent e) {
             score++;
             scoreDisplay.setText("Score: " + score);
-
-            // LEVELS
-            // min max
+            
             if (score % 100 == 0) {
                 playScoreUpSound();
             }
@@ -570,15 +593,20 @@ public class DinoFrame extends JFrame implements KeyListener {
             if (score % 500 == 0) {
                 changeBackground();
             }
-
-            if (score >= 100 && score < 200) {
+            if(score >= 0 && score < 100){
+                levelDisplay.setText("Level: 1");
+            }
+            else if (score >= 100 && score < 200) {
                 obstacleLimit = 3;
+                levelDisplay.setText("Level: 2");
             } else if (score >= 200 && score < 300) {
                 obstacleLimit = 4;
                 velocity = 5;
+                levelDisplay.setText("Level: 3");
             } else if (score >= 300 && score < 400) {
                 obstacleLimit = 4;
                 velocity = 6;
+                levelDisplay.setText("Level: 4");
             }
             else if(score >= 400 && score < 500){
                 obstacleLimit = 5;
@@ -587,19 +615,20 @@ public class DinoFrame extends JFrame implements KeyListener {
                 mediumCactusBorderX = summonDistance + 50;
                 bigCactusBorderX = summonDistance + 58;
                 birdBorderX = summonDistance + 43;
+                levelDisplay.setText("Level: 5");
             } else if (score >= 500 && score < 600) {
                 obstacleLimit = 6;
                 velocity = 7;
                 if (obstacleGenerator.size() == 3) {
                     obstacleGenerator.add(3);
                     obstacleGenerator.add(4);
-                    System.out.println("Bird Activated");
                 }
                 summonDistance = 900;
                 smallCactusBorderX = summonDistance + 27;
                 mediumCactusBorderX = summonDistance + 50;
                 bigCactusBorderX = summonDistance + 58;
                 birdBorderX = summonDistance + 43;
+                levelDisplay.setText("Level: 6");
             } else if(score >= 600 && score < 700){
                 obstacleLimit = 6;
                 velocity = 7;
@@ -608,6 +637,7 @@ public class DinoFrame extends JFrame implements KeyListener {
                 mediumCactusBorderX = summonDistance + 50;
                 bigCactusBorderX = summonDistance + 58;
                 birdBorderX = summonDistance + 43;
+                levelDisplay.setText("Level: 7");
             }
             else if(score >= 700 && score < 800){
                 obstacleLimit = 6;
@@ -617,17 +647,9 @@ public class DinoFrame extends JFrame implements KeyListener {
                 mediumCactusBorderX = summonDistance + 50;
                 bigCactusBorderX = summonDistance + 58;
                 birdBorderX = summonDistance + 43;
+                levelDisplay.setText("Level: 8");
             }
-            else if(score >= 800 && score < 900){
-                obstacleLimit = 6;
-                velocity = 8;
-                summonDistance = 825;
-                smallCactusBorderX = summonDistance + 27;
-                mediumCactusBorderX = summonDistance + 50;
-                bigCactusBorderX = summonDistance + 58;
-                birdBorderX = summonDistance + 43;
-            }
-            else if(score >= 900 && score < 1000){
+            else if(score >= 800 && score < 1000){
                 obstacleLimit = 6;
                 velocity = 9;
                 summonDistance = 825;
@@ -635,6 +657,7 @@ public class DinoFrame extends JFrame implements KeyListener {
                 mediumCactusBorderX = summonDistance + 50;
                 bigCactusBorderX = summonDistance + 58;
                 birdBorderX = summonDistance + 43;
+                levelDisplay.setText("Level: 9");
             }
             else if(score >= 1000){
                 obstacleLimit = 6;
@@ -644,6 +667,7 @@ public class DinoFrame extends JFrame implements KeyListener {
                 mediumCactusBorderX = summonDistance + 50;
                 bigCactusBorderX = summonDistance + 58;
                 birdBorderX = summonDistance + 43;
+                levelDisplay.setText("Level: 10");
             }
         }
 
@@ -671,8 +695,10 @@ public class DinoFrame extends JFrame implements KeyListener {
         }
         this.add(dino);
         this.add(dinoBorder);
-        // name
+        this.add(nameDisplay);
         this.add(scoreDisplay);
+        this.add(levelDisplay);
+        this.add(highScoreDisplay);
         this.add(obstacle1);
         this.add(obstacle1Border);
         this.add(obstacle2);
@@ -692,8 +718,6 @@ public class DinoFrame extends JFrame implements KeyListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            additionalDistance = (int) (Math.random() * (additionalDistanceMax - additionalDistanceMin + 1))
-                    + additionalDistanceMin;
             int random = (int) (Math.random() * ((obstacleGenerator.size() - 1) - 0 + 1));
             if (random == 0) {
                 smallCactus.setLocation(summonDistance, smallCactus.getY());
@@ -732,8 +756,8 @@ public class DinoFrame extends JFrame implements KeyListener {
                 smallCactus.setLocation(backFrame, smallCactus.getY());
                 cactusBorder.setLocation(backFrame, cactusBorder.getY());
             } else if (random == 1) {
-                mediumCactus.setLocation(summonDistance - additionalDistance, mediumCactus.getY());
-                cactusBorder.setBounds(mediumCactusBorderX - additionalDistance, mediumCactusBorderY,
+                mediumCactus.setLocation(summonDistance, mediumCactus.getY());
+                cactusBorder.setBounds(mediumCactusBorderX, mediumCactusBorderY,
                         mediumCactusBorderWidth, mediumCactusBorderWidth);
                 if (obstacle == 1 && obstacle1.getX() < backFrame) {
                     obstacle1.setBounds(mediumCactus.getBounds());
@@ -768,8 +792,8 @@ public class DinoFrame extends JFrame implements KeyListener {
                 mediumCactus.setLocation(backFrame, mediumCactus.getY());
                 cactusBorder.setLocation(backFrame, cactusBorder.getY());
             } else if (random == 2) {
-                bigCactus.setLocation(summonDistance - additionalDistance, bigCactus.getY());
-                cactusBorder.setBounds(bigCactusBorderX - additionalDistance, bigCactusBorderY, bigCactusBorderWidth,
+                bigCactus.setLocation(summonDistance, bigCactus.getY());
+                cactusBorder.setBounds(bigCactusBorderX, bigCactusBorderY, bigCactusBorderWidth,
                         bigCactusBorderHeight);
                 if (obstacle == 1 && obstacle1.getX() < backFrame) {
                     obstacle1.setBounds(bigCactus.getBounds());
@@ -804,8 +828,8 @@ public class DinoFrame extends JFrame implements KeyListener {
                 bigCactus.setLocation(backFrame, bigCactus.getY());
                 cactusBorder.setLocation(backFrame, cactusBorder.getY());
             } else if (random == 3) {
-                aboveBird.setLocation(summonDistance - additionalDistance, aboveBird.getY());
-                birdBorder.setBounds(birdBorderX - additionalDistance, birdBorderY, birdBorderWidth, birdBorderHeight);
+                aboveBird.setLocation(summonDistance, aboveBird.getY());
+                birdBorder.setBounds(birdBorderX , birdBorderY, birdBorderWidth, birdBorderHeight);
                 if (obstacle == 1 && obstacle1.getX() < backFrame) {
                     obstacle1.setBounds(aboveBird.getBounds());
                     obstacle1.setIcon(birdImage);
@@ -839,8 +863,8 @@ public class DinoFrame extends JFrame implements KeyListener {
                 aboveBird.setLocation(backFrame, aboveBird.getY());
                 birdBorder.setLocation(backFrame, birdBorder.getY());
             } else if (random == 4) {
-                belowBird.setLocation(summonDistance - additionalDistance, belowBird.getY());
-                birdBorder.setBounds(birdBorderX - additionalDistance, birdBorderY + 105, birdBorderWidth,
+                belowBird.setLocation(summonDistance, belowBird.getY());
+                birdBorder.setBounds(birdBorderX, birdBorderY + 105, birdBorderWidth,
                         birdBorderHeight);
                 if (obstacle == 1 && obstacle1.getX() < backFrame) {
                     obstacle1.setBounds(belowBird.getBounds());
