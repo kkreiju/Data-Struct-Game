@@ -66,6 +66,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 	boolean flap = true;
 	boolean crouchRendered = false;
 	boolean soundJump = false;
+	boolean day;
 
 	// score
 	JLabel scoreDisplay = new JLabel();
@@ -123,13 +124,13 @@ public class DinoFrame extends JFrame implements KeyListener {
 	int birdBorderWidth;
 	int birdBorderHeight;
 
-	//jump audio
+	// jump audio
 	private Clip jumpSound;
 	private Clip gameOverSound;
 	private Clip bgmClip;
 	private Clip scoreSound;
-		
-	//to adjust the bgm volume
+
+	// to adjust the bgm volume
 	float volume = -20.0f;
 
 	// for levels
@@ -283,103 +284,45 @@ public class DinoFrame extends JFrame implements KeyListener {
 		obstacle4.setBounds(obstacle4Border.getBounds());
 		obstacle5Border.setBounds(backFrame, backFrame, 0, 0);
 		obstacle5.setBounds(obstacle5Border.getBounds());
-	    
-		//bgm music
-				try {
-					File bgmsfx = new File("sfx\\xmasBgm.wav");
-					AudioInputStream bgmStream = AudioSystem.getAudioInputStream(bgmsfx);
-				    bgmClip = AudioSystem.getClip();
-				    bgmClip.open(bgmStream);
-				} catch (Exception ex) {
-				    ex.printStackTrace();
-				}
-			}
-			
-			private void setVolume(float volume) {
-			    if (bgmClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-			        FloatControl gainControl = (FloatControl) bgmClip.getControl(FloatControl.Type.MASTER_GAIN);
-			        gainControl.setValue(volume);
-			    }
-			}
-			
-			private void playBackgroundMusic() {
-			    try {
-			        bgmClip.loop(Clip.LOOP_CONTINUOUSLY);
-			    } catch (Exception ex) {
-			        ex.printStackTrace();
-			    }
-			}
 
-			private void stopBackgroundMusic() {
-			    bgmClip.stop();
-			
+		// bgm music
+		try {
+			File bgmsfx = new File("sfx\\xmasBgm.wav");
+			AudioInputStream bgmStream = AudioSystem.getAudioInputStream(bgmsfx);
+			bgmClip = AudioSystem.getClip();
+			bgmClip.open(bgmStream);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		day = true;
+		changeBackground();
 	}
-	
-	
+
+	private void setVolume(float volume) {
+		if (bgmClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+			FloatControl gainControl = (FloatControl) bgmClip.getControl(FloatControl.Type.MASTER_GAIN);
+			gainControl.setValue(volume);
+		}
+	}
+
+	private void playBackgroundMusic() {
+		try {
+			bgmClip.loop(Clip.LOOP_CONTINUOUSLY);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void stopBackgroundMusic() {
+		bgmClip.stop();
+
+	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 
 		switch (e.getKeyChar()) {
-		case ' ':
-			if (!playing) {
-				jumpTimer.stop();
-				dino.setLocation(dino.getX(), dino.getY());
-				dinoBorder.setLocation(dinoBorder.getX(), dinoBorder.getY());
-				reset();
-				playing = true;
-				initialPosition();
-				setVolume(volume);
-				playBackgroundMusic();
-				cloudsTimer.start();
-				moveTimer.start();
-				scoreTimer.start();
-				animTimer.start();
-				obstacleGeneratorTimer.start();
-			} else {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
-				jumpTimer.start();
-				if (!soundJump) {
-					try {
-						File jumpsfx = new File("sfx\\jump.wav");
-						AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
-						jumpSound = AudioSystem.getClip();
-						jumpSound.open(musicStream);
-						jumpSound.start();
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}
-				soundJump = true;
-				dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
-			}
-			break;
-		case 'd':
-			dinoBorder.setBorder(new LineBorder(Color.RED));
-			cactusBorder.setBorder(new LineBorder(Color.RED));
-			birdBorder.setBorder(new LineBorder(Color.RED));
-			obstacle1Border.setBorder(new LineBorder(Color.YELLOW));
-			obstacle2Border.setBorder(new LineBorder(Color.GREEN));
-			obstacle3Border.setBorder(new LineBorder(Color.PINK));
-			obstacle4Border.setBorder(new LineBorder(Color.CYAN));
-			obstacle5Border.setBorder(new LineBorder(Color.MAGENTA));
-			break;
-		case 'g':
-			score = 99;
-			break;
-		case 'q':
-			System.exit(0);
-			break;
-		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-
-		if (playing) {
-			switch (e.getKeyCode()) {
-			case 38:
-				// up button
+			case ' ':
 				if (!playing) {
 					jumpTimer.stop();
 					dino.setLocation(dino.getX(), dino.getY());
@@ -387,6 +330,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 					reset();
 					playing = true;
 					initialPosition();
+					setVolume(volume);
+					playBackgroundMusic();
 					cloudsTimer.start();
 					moveTimer.start();
 					scoreTimer.start();
@@ -410,28 +355,84 @@ public class DinoFrame extends JFrame implements KeyListener {
 					dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 				}
 				break;
-			case 40:
-				// down button
-				if (!onAir || jump) {
-					crouch = true;
-					if (!onAir) {
+			case 'd':
+				dinoBorder.setBorder(new LineBorder(Color.RED));
+				cactusBorder.setBorder(new LineBorder(Color.RED));
+				birdBorder.setBorder(new LineBorder(Color.RED));
+				obstacle1Border.setBorder(new LineBorder(Color.YELLOW));
+				obstacle2Border.setBorder(new LineBorder(Color.GREEN));
+				obstacle3Border.setBorder(new LineBorder(Color.PINK));
+				obstacle4Border.setBorder(new LineBorder(Color.CYAN));
+				obstacle5Border.setBorder(new LineBorder(Color.MAGENTA));
+				break;
+			case 'g':
+				score = 499;
+				break;
+			case 'q':
+				System.exit(0);
+				break;
+		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+		if (playing) {
+			switch (e.getKeyCode()) {
+				case 38:
+					// up button
+					if (!playing) {
+						jumpTimer.stop();
+						dino.setLocation(dino.getX(), dino.getY());
+						dinoBorder.setLocation(dinoBorder.getX(), dinoBorder.getY());
+						reset();
+						playing = true;
+						initialPosition();
+						cloudsTimer.start();
+						moveTimer.start();
+						scoreTimer.start();
+						animTimer.start();
+						obstacleGeneratorTimer.start();
+					} else {
+						dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+						jumpTimer.start();
+						if (!soundJump) {
+							try {
+								File jumpsfx = new File("sfx\\jump.wav");
+								AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
+								jumpSound = AudioSystem.getClip();
+								jumpSound.open(musicStream);
+								jumpSound.start();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+						soundJump = true;
+						dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
+					}
+					break;
+				case 40:
+					// down button
+					if (!onAir || jump) {
+						crouch = true;
+						if (!onAir) {
+							if (!crouchRendered) {
+								dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
+								crouchRendered = true;
+							}
+							dinoBorder.setBounds(dinoX, dino.getY() + dinoCrouchY, dinoCrouchBorderWidth,
+									dinoCrouchBorderHeight);
+						}
+					} else if (onAir && dino.getY() < 130) {
+						jump = true;
+					}
+					if (crouch && !onAir) {
 						if (!crouchRendered) {
 							dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
 							crouchRendered = true;
 						}
-						dinoBorder.setBounds(dinoX, dino.getY() + dinoCrouchY, dinoCrouchBorderWidth,
-								dinoCrouchBorderHeight);
 					}
-				} else if (onAir && dino.getY() < 130) {
-					jump = true;
-				}
-				if (crouch && !onAir) {
-					if (!crouchRendered) {
-						dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
-						crouchRendered = true;
-					}
-				}
-				break;
+					break;
 			}
 		}
 	}
@@ -526,16 +527,17 @@ public class DinoFrame extends JFrame implements KeyListener {
 				playGameOverSound();
 			}
 		}
-			private void playGameOverSound() {
-		        try {
-		        	File gameOversfx = new File("sfx\\gameOver.wav");
-		        	AudioInputStream gameOverStream = AudioSystem.getAudioInputStream(gameOversfx);
-		            gameOverSound = AudioSystem.getClip();
-		            gameOverSound.open(gameOverStream);
-		            gameOverSound.start();
-		        } catch (Exception ex) {
-		            ex.printStackTrace();
-		      }      
+
+		private void playGameOverSound() {
+			try {
+				File gameOversfx = new File("sfx\\gameOver.wav");
+				AudioInputStream gameOverStream = AudioSystem.getAudioInputStream(gameOversfx);
+				gameOverSound = AudioSystem.getClip();
+				gameOverSound.open(gameOverStream);
+				gameOverSound.start();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -554,18 +556,18 @@ public class DinoFrame extends JFrame implements KeyListener {
 			// LEVELS
 			// min max
 			if (score % 100 == 0) {
-		        playScoreUpSound();
-		    }
-			
+				playScoreUpSound();
+			}
+
+			if (score % 500 == 0) {
+				changeBackground();
+			}
+
 			if (score >= 100 && score < 200) {
 				obstacleLimit = 3;
-				//additionalDistanceMin = -600;
-				//additionalDistanceMax = -700;
 			} else if (score >= 200 && score < 300) {
 				obstacleLimit = 4;
 				velocity = 5;
-				//additionalDistanceMin = -600;
-				//additionalDistanceMax = -700;
 			} else if (score >= 300 && score < 500) {
 				velocity = 6;
 				obstacleLimit = 5;
@@ -575,7 +577,6 @@ public class DinoFrame extends JFrame implements KeyListener {
 				bigCactusBorderX = summonDistance + 58;
 				birdBorderX = summonDistance + 43;
 			} else if (score >= 500) {
-				changeBackground();
 				velocity = 7;
 				if (obstacleGenerator.size() == 3) {
 					obstacleGenerator.add(3);
@@ -587,20 +588,27 @@ public class DinoFrame extends JFrame implements KeyListener {
 
 		private void playScoreUpSound() {
 			try {
-	        	File scoreUpsfx = new File("sfx\\scoreUp.wav");
-	        	AudioInputStream scoreStream = AudioSystem.getAudioInputStream(scoreUpsfx);
-	            scoreSound = AudioSystem.getClip();
-	            scoreSound.open(scoreStream);
-	            scoreSound.start();
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	      }
-			
+				File scoreUpsfx = new File("sfx\\scoreUp.wav");
+				AudioInputStream scoreStream = AudioSystem.getAudioInputStream(scoreUpsfx);
+				scoreSound = AudioSystem.getClip();
+				scoreSound.open(scoreStream);
+				scoreSound.start();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
 		}
 	}
 
 	private void changeBackground() {
-		this.setContentPane(new JLabel(new ImageIcon("textures\\backgroundNight.png")));
+		if(day){
+			this.setContentPane(new JLabel(new ImageIcon("textures\\background.png")));
+			day = false;
+		}
+		else{
+			this.setContentPane(new JLabel(new ImageIcon("textures\\backgroundNight.png")));
+			day = true;
+		}
 		this.add(dino);
 		this.add(dinoBorder);
 		// name

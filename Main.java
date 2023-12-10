@@ -24,8 +24,8 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("Dino Jump");
 		/*
-		 DinoJumpMenu dj = new DinoJumpMenu();
-		dj.show();
+			DinoJumpMenu dj = new DinoJumpMenu();
+			dj.show();
 		 */
 		new DinoFrame();
 	}
