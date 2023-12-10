@@ -210,8 +210,9 @@ public class DinoJumpMenu extends javax.swing.JFrame {
     private void showHowToPlay() {
         String instructions = "Instructions:\n\n"
                 + "1. Press the 'Start' button to begin the game.\n"
-                + "2. Use the space bar to make the dinosaur jump.\n"
-                + "3. Avoid obstacles and try to achieve a high score.\n\n"
+                + "2. Use the space bar / up key to make the dinosaur jump.\n"
+                + "3. Use the down key to make the dinosaur crouch.\n"
+                + "4. Avoid obstacles and try to achieve a high score.\n\n"
                 + "Have fun playing!";
         JOptionPane.showMessageDialog(this, instructions, "How to Play", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -221,6 +222,7 @@ public class DinoJumpMenu extends javax.swing.JFrame {
             nameLabel.setText("Dinosaur Name: " + dinosaurGame.getDinosaurName());
             jLabel1.setText("Dinosaur Name: " + dinosaurGame.getDinosaurName());
             setName(dinosaurGame.getDinosaurName());
+            System.out.println(getName());
         }
     }
 
