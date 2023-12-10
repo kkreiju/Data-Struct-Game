@@ -4,8 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem; 
+import javax.sound.sampled.Clip;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -14,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
-
+	
 public class DinoFrame extends JFrame implements KeyListener {
 
 	ImageIcon logo = new ImageIcon("textures\\icon.png");
@@ -61,6 +65,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 	boolean collided = false;
 	boolean flap = true;
 	boolean crouchRendered = false;
+	boolean soundJump = false;
 	
 	//score
 	JLabel scoreDisplay = new JLabel();
@@ -109,7 +114,10 @@ public class DinoFrame extends JFrame implements KeyListener {
 	int bigCactusBorderY;
 	int bigCactusBorderWidth;
 	int bigCactusBorderHeight;
-
+	
+	//Jump Audio
+    private Clip jumpSound;
+	
 	// bird
 	int birdX;
 	int birdY;
@@ -180,6 +188,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		this.add(clouds3);
 		this.setVisible(true);
 
+		
 		//timer
 		jumpTimer = new Timer(10, new jumpTimerListener());
 		moveTimer = new Timer(10, new moveTimerListener());
@@ -273,9 +282,20 @@ public class DinoFrame extends JFrame implements KeyListener {
 				animTimer.start();
 				obstacleGeneratorTimer.start();
 			} else {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
-				jumpTimer.start();
-				dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
+			    dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+			    jumpTimer.start();
+			    if (!soundJump) {
+			        try {
+			            AudioInputStream musicStream = AudioSystem.getAudioInputStream(getClass().getResource("jump.wav"));
+			            jumpSound = AudioSystem.getClip();
+			            jumpSound.open(musicStream);
+			            jumpSound.start();
+			        } catch (Exception ex) {
+			            ex.printStackTrace();
+			        }
+			    }
+			    soundJump = true;
+			    dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 			}
 			break;
 		case 'd':
@@ -319,7 +339,18 @@ public class DinoFrame extends JFrame implements KeyListener {
 				} else {
 					dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
 					jumpTimer.start();
-					dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
+					if (!soundJump) {
+					    try {
+					        AudioInputStream musicStream = AudioSystem.getAudioInputStream(getClass().getResource("jump.wav"));
+					        jumpSound = AudioSystem.getClip();
+					        jumpSound.open(musicStream);
+					        jumpSound.start();
+					    } catch (Exception ex) {
+					        ex.printStackTrace();
+					    }
+					}
+					soundJump = true;
+				    dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 				}
 				break;
 			case 40:
@@ -380,6 +411,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 					jump = false;
 					onAir = false;
 					jumpTimer.stop();
+					
+					soundJump = false;
 				}
 			}
 		}
