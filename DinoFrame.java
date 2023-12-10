@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -122,8 +123,14 @@ public class DinoFrame extends JFrame implements KeyListener {
 	int birdBorderWidth;
 	int birdBorderHeight;
 
-	// jump audio
+	//jump audio
 	private Clip jumpSound;
+	private Clip gameOverSound;
+	private Clip bgmClip;
+	private Clip scoreSound;
+		
+	//to adjust the bgm volume
+	float volume = -20.0f;
 
 	// for levels
 	int velocity;
@@ -276,7 +283,39 @@ public class DinoFrame extends JFrame implements KeyListener {
 		obstacle4.setBounds(obstacle4Border.getBounds());
 		obstacle5Border.setBounds(backFrame, backFrame, 0, 0);
 		obstacle5.setBounds(obstacle5Border.getBounds());
+	    
+		//bgm music
+				try {
+					File bgmsfx = new File("sfx\\xmasBgm.wav");
+					AudioInputStream bgmStream = AudioSystem.getAudioInputStream(bgmsfx);
+				    bgmClip = AudioSystem.getClip();
+				    bgmClip.open(bgmStream);
+				} catch (Exception ex) {
+				    ex.printStackTrace();
+				}
+			}
+			
+			private void setVolume(float volume) {
+			    if (bgmClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+			        FloatControl gainControl = (FloatControl) bgmClip.getControl(FloatControl.Type.MASTER_GAIN);
+			        gainControl.setValue(volume);
+			    }
+			}
+			
+			private void playBackgroundMusic() {
+			    try {
+			        bgmClip.loop(Clip.LOOP_CONTINUOUSLY);
+			    } catch (Exception ex) {
+			        ex.printStackTrace();
+			    }
+			}
+
+			private void stopBackgroundMusic() {
+			    bgmClip.stop();
+			
 	}
+	
+	
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -290,6 +329,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 				reset();
 				playing = true;
 				initialPosition();
+				setVolume(volume);
+				playBackgroundMusic();
 				cloudsTimer.start();
 				moveTimer.start();
 				scoreTimer.start();
@@ -481,7 +522,20 @@ public class DinoFrame extends JFrame implements KeyListener {
 				cloudsTimer.stop();
 				obstacleGeneratorTimer.stop();
 				obstacleGenerator.clear();
+				stopBackgroundMusic();
+				playGameOverSound();
 			}
+		}
+			private void playGameOverSound() {
+		        try {
+		        	File gameOversfx = new File("sfx\\gameOver.wav");
+		        	AudioInputStream gameOverStream = AudioSystem.getAudioInputStream(gameOversfx);
+		            gameOverSound = AudioSystem.getClip();
+		            gameOverSound.open(gameOverStream);
+		            gameOverSound.start();
+		        } catch (Exception ex) {
+		            ex.printStackTrace();
+		      }      
 		}
 	}
 
@@ -499,6 +553,10 @@ public class DinoFrame extends JFrame implements KeyListener {
 
 			// LEVELS
 			// min max
+			if (score % 100 == 0) {
+		        playScoreUpSound();
+		    }
+			
 			if (score >= 100 && score < 200) {
 				obstacleLimit = 3;
 				//additionalDistanceMin = -600;
@@ -525,6 +583,19 @@ public class DinoFrame extends JFrame implements KeyListener {
 					System.out.println("Bird Activated");
 				}
 			}
+		}
+
+		private void playScoreUpSound() {
+			try {
+	        	File scoreUpsfx = new File("sfx\\scoreUp.wav");
+	        	AudioInputStream scoreStream = AudioSystem.getAudioInputStream(scoreUpsfx);
+	            scoreSound = AudioSystem.getClip();
+	            scoreSound.open(scoreStream);
+	            scoreSound.start();
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	      }
+			
 		}
 	}
 
