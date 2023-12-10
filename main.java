@@ -9,7 +9,6 @@
  * 
  * Problems:
  * 
- * 	remodel small cactus
  * 	smoothen day and night effects
  * 	hoy ang leveling wa pa nasugdan ataya oy
  * 
@@ -25,6 +24,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		System.out.println("Dino Jump");
+		/*
+		 DinoJumpMenu dj = new DinoJumpMenu();
+		dj.show();
+		 */
 		new DinoFrame();
 	}
 

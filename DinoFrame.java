@@ -4,9 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem; 
 import javax.sound.sampled.Clip;
@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
-	
+
 public class DinoFrame extends JFrame implements KeyListener {
 
 	ImageIcon logo = new ImageIcon("textures\\icon.png");
@@ -114,10 +114,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 	int bigCactusBorderY;
 	int bigCactusBorderWidth;
 	int bigCactusBorderHeight;
-	
-	//Jump Audio
-    private Clip jumpSound;
-	
+
 	// bird
 	int birdX;
 	int birdY;
@@ -125,6 +122,9 @@ public class DinoFrame extends JFrame implements KeyListener {
 	int birdBorderY;
 	int birdBorderWidth;
 	int birdBorderHeight;
+	
+	//jump audio
+	private Clip jumpSound;
 
 	int velocity;
 	int backFrame;
@@ -188,7 +188,6 @@ public class DinoFrame extends JFrame implements KeyListener {
 		this.add(clouds3);
 		this.setVisible(true);
 
-		
 		//timer
 		jumpTimer = new Timer(10, new jumpTimerListener());
 		moveTimer = new Timer(10, new moveTimerListener());
@@ -210,13 +209,13 @@ public class DinoFrame extends JFrame implements KeyListener {
 		dinoJumpLimit = 30;
 		cactusX = 900;
 		cactusY = 217;
-		smallCactusBorderX = cactusX + 70;
+		smallCactusBorderX = cactusX + 27;
 		smallCactusBorderY = cactusY + 40;
-		smallCactusBorderWidth = 10;
+		smallCactusBorderWidth = 35;
 		smallCactusBorderHeight = 30;
 		mediumCactusBorderX = cactusX + 50;
 		mediumCactusBorderY = cactusY + 31;
-		mediumCactusBorderWidth = 34;
+		mediumCactusBorderWidth = 32;
 		mediumCactusBorderHeight = 50;
 		bigCactusBorderX = cactusX + 58;
 		bigCactusBorderY = cactusY + 25;
@@ -282,11 +281,12 @@ public class DinoFrame extends JFrame implements KeyListener {
 				animTimer.start();
 				obstacleGeneratorTimer.start();
 			} else {
-			    dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
 			    jumpTimer.start();
 			    if (!soundJump) {
 			        try {
-			            AudioInputStream musicStream = AudioSystem.getAudioInputStream(getClass().getResource("jump.wav"));
+			        	File jumpsfx = new File("sfx\\jump.wav");
+			            AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
 			            jumpSound = AudioSystem.getClip();
 			            jumpSound.open(musicStream);
 			            jumpSound.start();
@@ -309,7 +309,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 			obstacle5Border.setBorder(new LineBorder(Color.MAGENTA));
 			break;
 		case 'g':
-			score = 280;
+			score = 500;
 			break;
 		case 'q':
 			System.exit(0);
@@ -340,17 +340,18 @@ public class DinoFrame extends JFrame implements KeyListener {
 					dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
 					jumpTimer.start();
 					if (!soundJump) {
-					    try {
-					        AudioInputStream musicStream = AudioSystem.getAudioInputStream(getClass().getResource("jump.wav"));
-					        jumpSound = AudioSystem.getClip();
-					        jumpSound.open(musicStream);
-					        jumpSound.start();
-					    } catch (Exception ex) {
-					        ex.printStackTrace();
-					    }
-					}
-					soundJump = true;
-				    dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
+				        try {
+				        	File jumpsfx = new File("sfx\\jump.wav");
+				            AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
+				            jumpSound = AudioSystem.getClip();
+				            jumpSound.open(musicStream);
+				            jumpSound.start();
+				        } catch (Exception ex) {
+				            ex.printStackTrace();
+				        }
+				    }
+				    soundJump = true;
+					dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 				}
 				break;
 			case 40:
@@ -411,7 +412,6 @@ public class DinoFrame extends JFrame implements KeyListener {
 					jump = false;
 					onAir = false;
 					jumpTimer.stop();
-					
 					soundJump = false;
 				}
 			}
