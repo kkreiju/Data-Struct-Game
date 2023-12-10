@@ -5,50 +5,49 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem; 
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
+@SuppressWarnings("serial")
 public class DinoFrame extends JFrame implements KeyListener {
 
 	ImageIcon logo = new ImageIcon("textures\\icon.png");
-	
-	//dino
+
+	// dino
 	Icon dinoImage = new ImageIcon("textures\\dinoStand.png");
 	JLabel dino = new JLabel();
-	
-	//cactus
+
+	// cactus
 	Icon smallCactusImage = new ImageIcon("textures\\smallCactus.png");
 	JLabel smallCactus = new JLabel();
 	Icon mediumCactusImage = new ImageIcon("textures\\mediumCactus.png");
 	JLabel mediumCactus = new JLabel();
 	Icon bigCactusImage = new ImageIcon("textures\\bigCactus.png");
 	JLabel bigCactus = new JLabel();
-	
-	//clouds
+
+	// clouds
 	Icon cloudsImage = new ImageIcon("textures\\clouds.png");
 	JLabel clouds1 = new JLabel();
 	JLabel clouds2 = new JLabel();
 	JLabel clouds3 = new JLabel();
 	int cloudsThroughLimit;
-	
-	//bird
+
+	// bird
 	Icon birdImage = new ImageIcon("textures\\bird.png");
 	Icon birdFlapImage = new ImageIcon("textures\\birdFlap.png");
 	JLabel aboveBird = new JLabel();
 	JLabel belowBird = new JLabel();
 
-	//timers
+	// timers
 	Timer jumpTimer;
 	Timer moveTimer;
 	Timer scoreTimer;
@@ -56,7 +55,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 	Timer cloudsTimer;
 	Timer obstacleGeneratorTimer;
 
-	//boolean variables
+	// boolean variables
 	boolean playing = false;
 	boolean crouch = false;
 	boolean jump = false;
@@ -66,8 +65,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 	boolean flap = true;
 	boolean crouchRendered = false;
 	boolean soundJump = false;
-	
-	//score
+
+	// score
 	JLabel scoreDisplay = new JLabel();
 	int score;
 
@@ -80,8 +79,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 	JLabel obstacle3Border = new JLabel();
 	JLabel obstacle4Border = new JLabel();
 	JLabel obstacle5Border = new JLabel();
-	
-	//obstacle holder
+
+	// obstacle holder
 	JLabel obstacle1 = new JLabel();
 	JLabel obstacle2 = new JLabel();
 	JLabel obstacle3 = new JLabel();
@@ -122,13 +121,19 @@ public class DinoFrame extends JFrame implements KeyListener {
 	int birdBorderY;
 	int birdBorderWidth;
 	int birdBorderHeight;
-	
-	//jump audio
+
+	// jump audio
 	private Clip jumpSound;
 
+	// for levels
 	int velocity;
+	int summonDistance;
+	int additionalDistance;
+	int additionalDistanceMin;
+	int additionalDistanceMax;
 	int backFrame;
 	int obstacle;
+	int obstacleLimit;
 	ArrayList<Integer> obstacleGenerator = new ArrayList<Integer>();
 
 	// reminders
@@ -146,7 +151,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		scoreDisplay.setBounds(750, 0, 70, 20);
 		scoreDisplay.setForeground(Color.WHITE);
 
-		//render images
+		// render images
 		dino.setIcon(dinoImage);
 		smallCactus.setIcon(smallCactusImage);
 		mediumCactus.setIcon(mediumCactusImage);
@@ -154,8 +159,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 		clouds1.setIcon(cloudsImage);
 		clouds2.setIcon(cloudsImage);
 		clouds3.setIcon(cloudsImage);
-		
-		//clouds animation (for not to reset every play)
+
+		// clouds animation (for not to reset every play)
 		clouds1.setBounds(700, 35, 94, 94);
 		clouds2.setBounds(200, -10, 94, 94);
 		clouds3.setBounds(500, 60, 94, 94);
@@ -170,7 +175,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		// add labels to frame
 		this.add(dino);
 		this.add(dinoBorder);
-		//name
+		// name
 		scoreDisplay.setText("Score: 0");
 		this.add(scoreDisplay);
 		this.add(obstacle1);
@@ -188,16 +193,21 @@ public class DinoFrame extends JFrame implements KeyListener {
 		this.add(clouds3);
 		this.setVisible(true);
 
-		//timer
+		// timer
 		jumpTimer = new Timer(10, new jumpTimerListener());
 		moveTimer = new Timer(10, new moveTimerListener());
 		scoreTimer = new Timer(200, new scoreTimerListener());
 		animTimer = new Timer(150, new animTimerListener());
 		cloudsTimer = new Timer(100, new cloudsTimerListener());
-		obstacleGeneratorTimer = new Timer(2000, new obstacleGeneratorTimerListener());
+		obstacleGeneratorTimer = new Timer(1500, new obstacleGeneratorTimerListener());
 	}
 
 	public void initialPosition() {
+		summonDistance = 1000;
+		additionalDistance = 0;
+		additionalDistanceMin = 0;
+		additionalDistanceMax = 0;
+
 		score = 0;
 		dinoX = 35;
 		dinoY = 225;
@@ -207,30 +217,35 @@ public class DinoFrame extends JFrame implements KeyListener {
 		dinoCrouchBorderWidth = 80;
 		dinoCrouchBorderHeight = 34;
 		dinoJumpLimit = 30;
-		cactusX = 900;
+
+		cactusX = 900; // black sheep (i changed cactusx to summon distance)
 		cactusY = 217;
-		smallCactusBorderX = cactusX + 27;
+		smallCactusBorderX = summonDistance + 27;
 		smallCactusBorderY = cactusY + 40;
 		smallCactusBorderWidth = 35;
 		smallCactusBorderHeight = 30;
-		mediumCactusBorderX = cactusX + 50;
+
+		mediumCactusBorderX = summonDistance + 50;
 		mediumCactusBorderY = cactusY + 31;
 		mediumCactusBorderWidth = 32;
 		mediumCactusBorderHeight = 50;
-		bigCactusBorderX = cactusX + 58;
+
+		bigCactusBorderX = summonDistance + 58;
 		bigCactusBorderY = cactusY + 25;
 		bigCactusBorderWidth = 25;
 		bigCactusBorderHeight = 50;
+
 		velocity = 4;
 		cloudsThroughLimit = -70;
 		backFrame = -100;
 		birdX = -100;
 		birdY = 100;
-		birdBorderX = 943;
+		birdBorderX = summonDistance + 43;
 		birdBorderY = 110;
 		birdBorderWidth = 50;
 		birdBorderHeight = 25;
 		obstacle = 1;
+		obstacleLimit = 2;
 
 		// dino
 		dino.setBounds(dinoX, dinoY, 94, 64);
@@ -249,8 +264,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 		belowBird.setIcon(birdImage);
 		belowBird.setBounds(birdX, birdY + 105, 94, 64);
 		birdBorder.setBounds(birdX, birdY, birdBorderWidth, birdBorderHeight);
-		
-		//random obstacles
+
+		// random obstacles
 		obstacle1Border.setBounds(backFrame, backFrame, 0, 0);
 		obstacle1.setBounds(obstacle1Border.getBounds());
 		obstacle2Border.setBounds(backFrame, backFrame, 0, 0);
@@ -282,20 +297,20 @@ public class DinoFrame extends JFrame implements KeyListener {
 				obstacleGeneratorTimer.start();
 			} else {
 				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
-			    jumpTimer.start();
-			    if (!soundJump) {
-			        try {
-			        	File jumpsfx = new File("sfx\\jump.wav");
-			            AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
-			            jumpSound = AudioSystem.getClip();
-			            jumpSound.open(musicStream);
-			            jumpSound.start();
-			        } catch (Exception ex) {
-			            ex.printStackTrace();
-			        }
-			    }
-			    soundJump = true;
-			    dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
+				jumpTimer.start();
+				if (!soundJump) {
+					try {
+						File jumpsfx = new File("sfx\\jump.wav");
+						AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
+						jumpSound = AudioSystem.getClip();
+						jumpSound.open(musicStream);
+						jumpSound.start();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+				soundJump = true;
+				dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 			}
 			break;
 		case 'd':
@@ -309,7 +324,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 			obstacle5Border.setBorder(new LineBorder(Color.MAGENTA));
 			break;
 		case 'g':
-			score = 500;
+			score = 99;
 			break;
 		case 'q':
 			System.exit(0);
@@ -323,7 +338,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		if (playing) {
 			switch (e.getKeyCode()) {
 			case 38:
-				//up button
+				// up button
 				if (!playing) {
 					jumpTimer.stop();
 					dino.setLocation(dino.getX(), dino.getY());
@@ -340,26 +355,26 @@ public class DinoFrame extends JFrame implements KeyListener {
 					dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
 					jumpTimer.start();
 					if (!soundJump) {
-				        try {
-				        	File jumpsfx = new File("sfx\\jump.wav");
-				            AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
-				            jumpSound = AudioSystem.getClip();
-				            jumpSound.open(musicStream);
-				            jumpSound.start();
-				        } catch (Exception ex) {
-				            ex.printStackTrace();
-				        }
-				    }
-				    soundJump = true;
+						try {
+							File jumpsfx = new File("sfx\\jump.wav");
+							AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
+							jumpSound = AudioSystem.getClip();
+							jumpSound.open(musicStream);
+							jumpSound.start();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+					soundJump = true;
 					dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 				}
 				break;
 			case 40:
-				//down button
+				// down button
 				if (!onAir || jump) {
 					crouch = true;
 					if (!onAir) {
-						if(!crouchRendered) {
+						if (!crouchRendered) {
 							dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
 							crouchRendered = true;
 						}
@@ -370,7 +385,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 					jump = true;
 				}
 				if (crouch && !onAir) {
-					if(!crouchRendered) {
+					if (!crouchRendered) {
 						dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
 						crouchRendered = true;
 					}
@@ -381,7 +396,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 	}
 
 	public void keyReleased(KeyEvent e) {
-		if(crouch && playing) {
+		if (crouch && playing) {
 			crouch = false;
 			crouchRendered = false;
 			dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
@@ -446,15 +461,15 @@ public class DinoFrame extends JFrame implements KeyListener {
 			if (!crouch) {
 				dinoBorder.setLocation(dino.getX(), dino.getY());
 			}
-			
-			//collision for random obstacle
-			if (checkCollision(dinoBorder, obstacle1Border) || checkCollision(dinoBorder, obstacle2Border) ||
-					checkCollision(dinoBorder, obstacle3Border) || checkCollision(dinoBorder, obstacle4Border) ||
-					checkCollision(dinoBorder, obstacle5Border)) {
-				if(crouch) {
+
+			// collision for random obstacle
+			if (checkCollision(dinoBorder, obstacle1Border) || checkCollision(dinoBorder, obstacle2Border)
+					|| checkCollision(dinoBorder, obstacle3Border) || checkCollision(dinoBorder, obstacle4Border)
+					|| checkCollision(dinoBorder, obstacle5Border)) {
+				if (crouch) {
 					dinoBorder.setBounds(dinoX, dino.getY() + dinoCrouchY, dinoCrouchBorderWidth,
 							dinoCrouchBorderHeight);
-				}else {
+				} else {
 					dinoBorder.setLocation(dino.getX(), dino.getY());
 				}
 				dino.setLocation(dino.getX(), dino.getY());
@@ -482,12 +497,28 @@ public class DinoFrame extends JFrame implements KeyListener {
 			score++;
 			scoreDisplay.setText("Score: " + score);
 
-			//implement the obs1-5 thingy here
-			if (score >= 300 && score < 500) {
+			// LEVELS
+			// min max
+			if (score >= 100 && score < 200) {
+				obstacleLimit = 3;
+				//additionalDistanceMin = -600;
+				//additionalDistanceMax = -700;
+			} else if (score >= 200 && score < 300) {
+				obstacleLimit = 4;
 				velocity = 5;
-				changeBackground();
-			} else if (score >= 500) {
+				//additionalDistanceMin = -600;
+				//additionalDistanceMax = -700;
+			} else if (score >= 300 && score < 500) {
 				velocity = 6;
+				obstacleLimit = 5;
+				summonDistance = 900;
+				smallCactusBorderX = summonDistance + 27;
+				mediumCactusBorderX = summonDistance + 50;
+				bigCactusBorderX = summonDistance + 58;
+				birdBorderX = summonDistance + 43;
+			} else if (score >= 500) {
+				changeBackground();
+				velocity = 7;
 				if (obstacleGenerator.size() == 3) {
 					obstacleGenerator.add(3);
 					obstacleGenerator.add(4);
@@ -496,12 +527,12 @@ public class DinoFrame extends JFrame implements KeyListener {
 			}
 		}
 	}
-	
+
 	private void changeBackground() {
 		this.setContentPane(new JLabel(new ImageIcon("textures\\backgroundNight.png")));
 		this.add(dino);
 		this.add(dinoBorder);
-		//name
+		// name
 		this.add(scoreDisplay);
 		this.add(obstacle1);
 		this.add(obstacle1Border);
@@ -521,190 +552,236 @@ public class DinoFrame extends JFrame implements KeyListener {
 	private class obstacleGeneratorTimerListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			additionalDistance = (int) (Math.random() * (additionalDistanceMax - additionalDistanceMin + 1))
+					+ additionalDistanceMin;
 			int random = (int) (Math.random() * ((obstacleGenerator.size() - 1) - 0 + 1));
 			if (random == 0) {
-				smallCactus.setLocation(cactusX, smallCactus.getY());
-				cactusBorder.setBounds(smallCactusBorderX, smallCactusBorderY, smallCactusBorderWidth, smallCactusBorderHeight);
-				if(obstacle == 1) {
+				smallCactus.setLocation(summonDistance, smallCactus.getY());
+				cactusBorder.setBounds(smallCactusBorderX, smallCactusBorderY, smallCactusBorderWidth,
+						smallCactusBorderHeight);
+				if (obstacle == 1 && obstacle1.getX() < backFrame) {
 					obstacle1.setBounds(smallCactus.getBounds());
 					obstacle1.setIcon(smallCactus.getIcon());
 					obstacle1.setLocation(smallCactus.getLocation());
 					obstacle1Border.setBounds(cactusBorder.getBounds());
 				}
-				else if(obstacle == 2) {
+				if (obstacle == 2 && obstacle2.getX() < backFrame) {
 					obstacle2.setBounds(smallCactus.getBounds());
 					obstacle2.setIcon(smallCactus.getIcon());
 					obstacle2.setLocation(smallCactus.getLocation());
 					obstacle2Border.setBounds(cactusBorder.getBounds());
+					obstacle2.setLocation(obstacle2.getX() + 200, obstacle2.getY());
+					obstacle2Border.setLocation(obstacle2Border.getX() + 200, obstacle2Border.getY());
 				}
-				else if(obstacle == 3) {
+				if (obstacle == 3 && obstacle3.getX() < backFrame) {
 					obstacle3.setBounds(smallCactus.getBounds());
 					obstacle3.setIcon(smallCactus.getIcon());
 					obstacle3.setLocation(smallCactus.getLocation());
 					obstacle3Border.setBounds(cactusBorder.getBounds());
+					obstacle3.setLocation(obstacle3.getX() + 400, obstacle3.getY());
+					obstacle3Border.setLocation(obstacle3Border.getX() + 400, obstacle3Border.getY());
 				}
-				else if(obstacle == 4) {
+				if (obstacle == 4 && obstacle4.getX() < backFrame) {
 					obstacle4.setBounds(smallCactus.getBounds());
 					obstacle4.setIcon(smallCactus.getIcon());
 					obstacle4.setLocation(smallCactus.getLocation());
 					obstacle4Border.setBounds(cactusBorder.getBounds());
+					obstacle4.setLocation(obstacle4.getX() + 600, obstacle4.getY());
+					obstacle4Border.setLocation(obstacle4Border.getX() + 600, obstacle4Border.getY());
 				}
-				else{
+				if (obstacle == 5 && obstacle5.getX() < backFrame) {
 					obstacle5.setBounds(smallCactus.getBounds());
 					obstacle5.setIcon(smallCactus.getIcon());
 					obstacle5.setLocation(smallCactus.getLocation());
 					obstacle5Border.setBounds(cactusBorder.getBounds());
+					obstacle5.setLocation(obstacle5.getX() + 800, obstacle5.getY());
+					obstacle5Border.setLocation(obstacle5Border.getX() + 800, obstacle5Border.getY());
 				}
 				smallCactus.setLocation(backFrame, smallCactus.getY());
 				cactusBorder.setLocation(backFrame, cactusBorder.getY());
 				System.out.println("Small Cactus");
 			} else if (random == 1) {
-				mediumCactus.setLocation(cactusX, mediumCactus.getY());
-				cactusBorder.setBounds(mediumCactusBorderX, mediumCactusBorderY, mediumCactusBorderWidth, mediumCactusBorderWidth);
-				if(obstacle == 1) {
+				mediumCactus.setLocation(summonDistance - additionalDistance, mediumCactus.getY());
+				cactusBorder.setBounds(mediumCactusBorderX - additionalDistance, mediumCactusBorderY,
+						mediumCactusBorderWidth, mediumCactusBorderWidth);
+				if (obstacle == 1 && obstacle1.getX() < backFrame) {
 					obstacle1.setBounds(mediumCactus.getBounds());
 					obstacle1.setIcon(mediumCactus.getIcon());
 					obstacle1.setLocation(mediumCactus.getLocation());
 					obstacle1Border.setBounds(cactusBorder.getBounds());
 				}
-				else if(obstacle == 2) {
+				if (obstacle == 2 && obstacle2.getX() < backFrame) {
 					obstacle2.setBounds(mediumCactus.getBounds());
 					obstacle2.setIcon(mediumCactus.getIcon());
 					obstacle2.setLocation(mediumCactus.getLocation());
 					obstacle2Border.setBounds(cactusBorder.getBounds());
+					obstacle2.setLocation(obstacle2.getX() + 200, obstacle2.getY());
+					obstacle2Border.setLocation(obstacle2Border.getX() + 200, obstacle2Border.getY());
 				}
-				else if(obstacle == 3) {
+				if (obstacle == 3 && obstacle3.getX() < backFrame) {
 					obstacle3.setBounds(mediumCactus.getBounds());
 					obstacle3.setIcon(mediumCactus.getIcon());
 					obstacle3.setLocation(mediumCactus.getLocation());
 					obstacle3Border.setBounds(cactusBorder.getBounds());
+					obstacle3.setLocation(obstacle3.getX() + 400, obstacle3.getY());
+					obstacle3Border.setLocation(obstacle3Border.getX() + 400, obstacle3Border.getY());
 				}
-				else if(obstacle == 4) {
+				if (obstacle == 4 && obstacle4.getX() < backFrame) {
 					obstacle4.setBounds(mediumCactus.getBounds());
 					obstacle4.setIcon(mediumCactus.getIcon());
 					obstacle4.setLocation(mediumCactus.getLocation());
 					obstacle4Border.setBounds(cactusBorder.getBounds());
+					obstacle4.setLocation(obstacle4.getX() + 600, obstacle4.getY());
+					obstacle4Border.setLocation(obstacle4Border.getX() + 600, obstacle4Border.getY());
 				}
-				else {
+				if (obstacle == 5 && obstacle5.getX() < backFrame) {
 					obstacle5.setBounds(mediumCactus.getBounds());
 					obstacle5.setIcon(mediumCactus.getIcon());
 					obstacle5.setLocation(mediumCactus.getLocation());
 					obstacle5Border.setBounds(cactusBorder.getBounds());
+					obstacle5.setLocation(obstacle5.getX() + 800, obstacle5.getY());
+					obstacle5Border.setLocation(obstacle5Border.getX() + 800, obstacle5Border.getY());
 				}
 				mediumCactus.setLocation(backFrame, mediumCactus.getY());
 				cactusBorder.setLocation(backFrame, cactusBorder.getY());
 				System.out.println("Medium Cactus");
 			} else if (random == 2) {
-				bigCactus.setLocation(cactusX, bigCactus.getY());
-				cactusBorder.setBounds(bigCactusBorderX, bigCactusBorderY, bigCactusBorderWidth, bigCactusBorderHeight);
-				if(obstacle == 1) {
+				bigCactus.setLocation(summonDistance - additionalDistance, bigCactus.getY());
+				cactusBorder.setBounds(bigCactusBorderX - additionalDistance, bigCactusBorderY, bigCactusBorderWidth,
+						bigCactusBorderHeight);
+				if (obstacle == 1 && obstacle1.getX() < backFrame) {
 					obstacle1.setBounds(bigCactus.getBounds());
 					obstacle1.setIcon(bigCactus.getIcon());
 					obstacle1.setLocation(bigCactus.getLocation());
 					obstacle1Border.setBounds(cactusBorder.getBounds());
 				}
-				else if(obstacle == 2) {
+				if (obstacle == 2 && obstacle2.getX() < backFrame) {
 					obstacle2.setBounds(bigCactus.getBounds());
 					obstacle2.setIcon(bigCactus.getIcon());
 					obstacle2.setLocation(bigCactus.getLocation());
 					obstacle2Border.setBounds(cactusBorder.getBounds());
+					obstacle2.setLocation(obstacle2.getX() + 200, obstacle2.getY());
+					obstacle2Border.setLocation(obstacle2Border.getX() + 200, obstacle2Border.getY());
 				}
-				else if(obstacle == 3) {
+				if (obstacle == 3 && obstacle3.getX() < backFrame) {
 					obstacle3.setBounds(bigCactus.getBounds());
 					obstacle3.setIcon(bigCactus.getIcon());
 					obstacle3.setLocation(bigCactus.getLocation());
 					obstacle3Border.setBounds(cactusBorder.getBounds());
+					obstacle3.setLocation(obstacle3.getX() + 400, obstacle3.getY());
+					obstacle3Border.setLocation(obstacle3Border.getX() + 400, obstacle3Border.getY());
 				}
-				else if(obstacle == 4) {
+				if (obstacle == 4 && obstacle4.getX() < backFrame) {
 					obstacle4.setBounds(bigCactus.getBounds());
 					obstacle4.setIcon(bigCactus.getIcon());
 					obstacle4.setLocation(bigCactus.getLocation());
 					obstacle4Border.setBounds(cactusBorder.getBounds());
+					obstacle4.setLocation(obstacle4.getX() + 600, obstacle4.getY());
+					obstacle4Border.setLocation(obstacle4Border.getX() + 600, obstacle4Border.getY());
 				}
-				else{
+				if (obstacle == 5 && obstacle5.getX() < backFrame) {
 					obstacle5.setBounds(bigCactus.getBounds());
 					obstacle5.setIcon(bigCactus.getIcon());
 					obstacle5.setLocation(bigCactus.getLocation());
 					obstacle5Border.setBounds(cactusBorder.getBounds());
+					obstacle5.setLocation(obstacle5.getX() + 800, obstacle5.getY());
+					obstacle5Border.setLocation(obstacle5Border.getX() + 800, obstacle5Border.getY());
 				}
 				bigCactus.setLocation(backFrame, bigCactus.getY());
 				cactusBorder.setLocation(backFrame, cactusBorder.getY());
 				System.out.println("Big Cactus");
 			} else if (random == 3) {
-				aboveBird.setLocation(cactusX, aboveBird.getY());
-				birdBorder.setBounds(birdBorderX, birdBorderY, birdBorderWidth, birdBorderHeight);
-				if(obstacle == 1) {
+				aboveBird.setLocation(summonDistance - additionalDistance, aboveBird.getY());
+				birdBorder.setBounds(birdBorderX - additionalDistance, birdBorderY, birdBorderWidth, birdBorderHeight);
+				if (obstacle == 1 && obstacle1.getX() < backFrame) {
 					obstacle1.setBounds(aboveBird.getBounds());
 					obstacle1.setIcon(birdImage);
 					obstacle1.setLocation(aboveBird.getLocation());
 					obstacle1Border.setBounds(birdBorder.getBounds());
 				}
-				else if(obstacle == 2) {
+				if (obstacle == 2 && obstacle2.getX() < backFrame) {
 					obstacle2.setBounds(aboveBird.getBounds());
 					obstacle2.setIcon(birdImage);
 					obstacle2.setLocation(aboveBird.getLocation());
 					obstacle2Border.setBounds(birdBorder.getBounds());
+					obstacle2.setLocation(obstacle2.getX() + 200, obstacle2.getY());
+					obstacle2Border.setLocation(obstacle2Border.getX() + 200, obstacle2Border.getY());
 				}
-				else if(obstacle == 3) {
+				if (obstacle == 3 && obstacle3.getX() < backFrame) {
 					obstacle3.setBounds(aboveBird.getBounds());
 					obstacle3.setIcon(birdImage);
 					obstacle3.setLocation(aboveBird.getLocation());
 					obstacle3Border.setBounds(birdBorder.getBounds());
+					obstacle3.setLocation(obstacle3.getX() + 400, obstacle3.getY());
+					obstacle3Border.setLocation(obstacle3Border.getX() + 400, obstacle3Border.getY());
 				}
-				else if(obstacle == 4) {
+				if (obstacle == 4 && obstacle4.getX() < backFrame) {
 					obstacle4.setBounds(aboveBird.getBounds());
 					obstacle4.setIcon(birdImage);
 					obstacle4.setLocation(aboveBird.getLocation());
 					obstacle4Border.setBounds(birdBorder.getBounds());
+					obstacle4.setLocation(obstacle4.getX() + 600, obstacle4.getY());
+					obstacle4Border.setLocation(obstacle4Border.getX() + 600, obstacle4Border.getY());
 				}
-				else{
+				if (obstacle == 5 && obstacle5.getX() < backFrame) {
 					obstacle5.setBounds(aboveBird.getBounds());
 					obstacle5.setIcon(birdImage);
 					obstacle5.setLocation(aboveBird.getLocation());
 					obstacle5Border.setBounds(birdBorder.getBounds());
+					obstacle5.setLocation(obstacle5.getX() + 800, obstacle5.getY());
+					obstacle5Border.setLocation(obstacle5Border.getX() + 800, obstacle5Border.getY());
 				}
 				aboveBird.setLocation(backFrame, aboveBird.getY());
 				birdBorder.setLocation(backFrame, birdBorder.getY());
 				System.out.println("Above Bird");
 			} else if (random == 4) {
-				belowBird.setLocation(cactusX, belowBird.getY());
-				birdBorder.setBounds(birdBorderX, birdBorderY + 105, birdBorderWidth, birdBorderHeight);
-				if(obstacle == 1) {
+				belowBird.setLocation(summonDistance - additionalDistance, belowBird.getY());
+				birdBorder.setBounds(birdBorderX - additionalDistance, birdBorderY + 105, birdBorderWidth,
+						birdBorderHeight);
+				if (obstacle == 1 && obstacle1.getX() < backFrame) {
 					obstacle1.setBounds(belowBird.getBounds());
 					obstacle1.setIcon(birdImage);
 					obstacle1.setLocation(belowBird.getLocation());
 					obstacle1Border.setBounds(birdBorder.getBounds());
 				}
-				else if(obstacle == 2) {
+				if (obstacle == 2 && obstacle2.getX() < backFrame) {
 					obstacle2.setBounds(belowBird.getBounds());
 					obstacle2.setIcon(birdImage);
 					obstacle2.setLocation(belowBird.getLocation());
 					obstacle2Border.setBounds(birdBorder.getBounds());
+					obstacle2.setLocation(obstacle2.getX() + 200, obstacle2.getY());
+					obstacle2Border.setLocation(obstacle2Border.getX() + 200, obstacle2Border.getY());
 				}
-				else if(obstacle == 3) {
+				if (obstacle == 3 && obstacle3.getX() < backFrame) {
 					obstacle3.setBounds(belowBird.getBounds());
 					obstacle3.setIcon(birdImage);
 					obstacle3.setLocation(belowBird.getLocation());
 					obstacle3Border.setBounds(birdBorder.getBounds());
+					obstacle3.setLocation(obstacle3.getX() + 400, obstacle3.getY());
+					obstacle3Border.setLocation(obstacle3Border.getX() + 400, obstacle3Border.getY());
 				}
-				else if(obstacle == 4) {
+				if (obstacle == 4 && obstacle4.getX() < backFrame) {
 					obstacle4.setBounds(belowBird.getBounds());
 					obstacle4.setIcon(birdImage);
 					obstacle4.setLocation(belowBird.getLocation());
 					obstacle4Border.setBounds(birdBorder.getBounds());
+					obstacle4.setLocation(obstacle4.getX() + 600, obstacle4.getY());
+					obstacle4Border.setLocation(obstacle4Border.getX() + 600, obstacle4Border.getY());
 				}
-				else{
+				if (obstacle == 5 && obstacle5.getX() < backFrame) {
 					obstacle5.setBounds(belowBird.getBounds());
 					obstacle5.setIcon(birdImage);
 					obstacle5.setLocation(belowBird.getLocation());
 					obstacle5Border.setBounds(birdBorder.getBounds());
+					obstacle5.setLocation(obstacle5.getX() + 800, obstacle5.getY());
+					obstacle5Border.setLocation(obstacle5Border.getX() + 800, obstacle5Border.getY());
 				}
 				belowBird.setLocation(backFrame, belowBird.getY());
 				birdBorder.setLocation(backFrame, birdBorder.getY());
 				System.out.println("Below Bird");
 			}
 			obstacle++;
-			if(obstacle == 6) {
+			if (obstacle == obstacleLimit) {
 				obstacle = 1;
 			}
 		}
@@ -748,39 +825,39 @@ public class DinoFrame extends JFrame implements KeyListener {
 			if (flap) {
 				aboveBird.setIcon(new javax.swing.ImageIcon("textures\\bird.png"));
 				belowBird.setIcon(new javax.swing.ImageIcon("textures\\bird.png"));
-				//continues to obstacle5
-				if(obstacle1.getIcon() == birdImage) {
+				// continues to obstacle5
+				if (obstacle1.getIcon() == birdImage) {
 					obstacle1.setIcon(birdFlapImage);
 				}
-				if(obstacle2.getIcon() == birdImage) {
+				if (obstacle2.getIcon() == birdImage) {
 					obstacle2.setIcon(birdFlapImage);
 				}
-				if(obstacle3.getIcon() == birdImage) {
+				if (obstacle3.getIcon() == birdImage) {
 					obstacle3.setIcon(birdFlapImage);
 				}
-				if(obstacle4.getIcon() == birdImage) {
+				if (obstacle4.getIcon() == birdImage) {
 					obstacle4.setIcon(birdFlapImage);
 				}
-				if(obstacle5.getIcon() == birdImage) {
+				if (obstacle5.getIcon() == birdImage) {
 					obstacle5.setIcon(birdFlapImage);
 				}
 				flap = false;
 			} else {
 				aboveBird.setIcon(new javax.swing.ImageIcon("textures\\birdFlap.png"));
 				belowBird.setIcon(new javax.swing.ImageIcon("textures\\birdFlap.png"));
-				if(obstacle1.getIcon() == birdFlapImage) {
+				if (obstacle1.getIcon() == birdFlapImage) {
 					obstacle1.setIcon(birdImage);
 				}
-				if(obstacle2.getIcon() == birdFlapImage) {
+				if (obstacle2.getIcon() == birdFlapImage) {
 					obstacle2.setIcon(birdImage);
 				}
-				if(obstacle3.getIcon() == birdFlapImage) {
+				if (obstacle3.getIcon() == birdFlapImage) {
 					obstacle3.setIcon(birdImage);
 				}
-				if(obstacle4.getIcon() == birdFlapImage) {
+				if (obstacle4.getIcon() == birdFlapImage) {
 					obstacle4.setIcon(birdImage);
 				}
-				if(obstacle5.getIcon() == birdFlapImage) {
+				if (obstacle5.getIcon() == birdFlapImage) {
 					obstacle5.setIcon(birdImage);
 				}
 				flap = true;
