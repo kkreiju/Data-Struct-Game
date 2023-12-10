@@ -21,7 +21,7 @@ import javax.swing.border.LineBorder;
 @SuppressWarnings("serial")
 public class DinoFrame extends JFrame implements KeyListener {
 
-	ImageIcon logo = new ImageIcon("textures\\icon.png");
+	ImageIcon logo = new ImageIcon("textures\\icon.jpg");
 
 	// dino
 	Icon dinoImage = new ImageIcon("textures\\dinoStand.png");
