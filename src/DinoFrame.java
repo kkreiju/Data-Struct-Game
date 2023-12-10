@@ -21,30 +21,30 @@ import javax.swing.border.LineBorder;
 @SuppressWarnings("serial")
 public class DinoFrame extends JFrame implements KeyListener {
 
-	ImageIcon logo = new ImageIcon("textures\\icon.jpg");
+	ImageIcon logo = new ImageIcon("src\\textures\\icon.jpg");
 
 	// dino
-	Icon dinoImage = new ImageIcon("textures\\dinoStand.png");
+	Icon dinoImage = new ImageIcon("src\\textures\\dinoStand.png");
 	JLabel dino = new JLabel();
 
 	// cactus
-	Icon smallCactusImage = new ImageIcon("textures\\smallCactus.png");
+	Icon smallCactusImage = new ImageIcon("src\\textures\\smallCactus.png");
 	JLabel smallCactus = new JLabel();
-	Icon mediumCactusImage = new ImageIcon("textures\\mediumCactus.png");
+	Icon mediumCactusImage = new ImageIcon("src\\textures\\mediumCactus.png");
 	JLabel mediumCactus = new JLabel();
-	Icon bigCactusImage = new ImageIcon("textures\\bigCactus.png");
+	Icon bigCactusImage = new ImageIcon("src\\textures\\bigCactus.png");
 	JLabel bigCactus = new JLabel();
 
 	// clouds
-	Icon cloudsImage = new ImageIcon("textures\\clouds.png");
+	Icon cloudsImage = new ImageIcon("src\\textures\\clouds.png");
 	JLabel clouds1 = new JLabel();
 	JLabel clouds2 = new JLabel();
 	JLabel clouds3 = new JLabel();
 	int cloudsThroughLimit;
 
 	// bird
-	Icon birdImage = new ImageIcon("textures\\bird.png");
-	Icon birdFlapImage = new ImageIcon("textures\\birdFlap.png");
+	Icon birdImage = new ImageIcon("src\\textures\\bird.png");
+	Icon birdFlapImage = new ImageIcon("src\\textures\\birdFlap.png");
 	JLabel aboveBird = new JLabel();
 	JLabel belowBird = new JLabel();
 
@@ -176,7 +176,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		initialPosition();
 
 		// background
-		this.setContentPane(new JLabel(new ImageIcon("textures\\background.png")));
+		this.setContentPane(new JLabel(new ImageIcon("src\\textures\\background.png")));
 		this.setIconImage(logo.getImage());
 		this.addKeyListener(this);
 
@@ -287,7 +287,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 
 		// bgm music
 		try {
-			File bgmsfx = new File("sfx\\xmasBgm.wav");
+			File bgmsfx = new File("src\\sfx\\xmasBgm.wav");
 			AudioInputStream bgmStream = AudioSystem.getAudioInputStream(bgmsfx);
 			bgmClip = AudioSystem.getClip();
 			bgmClip.open(bgmStream);
@@ -338,11 +338,11 @@ public class DinoFrame extends JFrame implements KeyListener {
 					animTimer.start();
 					obstacleGeneratorTimer.start();
 				} else {
-					dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+					dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStand.png"));
 					jumpTimer.start();
 					if (!soundJump) {
 						try {
-							File jumpsfx = new File("sfx\\jump.wav");
+							File jumpsfx = new File("src\\sfx\\jump.wav");
 							AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
 							jumpSound = AudioSystem.getClip();
 							jumpSound.open(musicStream);
@@ -394,11 +394,11 @@ public class DinoFrame extends JFrame implements KeyListener {
 						animTimer.start();
 						obstacleGeneratorTimer.start();
 					} else {
-						dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+						dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStand.png"));
 						jumpTimer.start();
 						if (!soundJump) {
 							try {
-								File jumpsfx = new File("sfx\\jump.wav");
+								File jumpsfx = new File("src\\sfx\\jump.wav");
 								AudioInputStream musicStream = AudioSystem.getAudioInputStream(jumpsfx);
 								jumpSound = AudioSystem.getClip();
 								jumpSound.open(musicStream);
@@ -417,7 +417,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 						crouch = true;
 						if (!onAir) {
 							if (!crouchRendered) {
-								dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
+								dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoDuck.png"));
 								crouchRendered = true;
 							}
 							dinoBorder.setBounds(dinoX, dino.getY() + dinoCrouchY, dinoCrouchBorderWidth,
@@ -428,7 +428,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 					}
 					if (crouch && !onAir) {
 						if (!crouchRendered) {
-							dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuck.png"));
+							dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoDuck.png"));
 							crouchRendered = true;
 						}
 					}
@@ -441,7 +441,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		if (crouch && playing) {
 			crouch = false;
 			crouchRendered = false;
-			dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+			dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStand.png"));
 			dinoBorder.setBounds(dinoX, dinoY, dinoStandBorderWidth, dinoStandBorderHeight);
 		}
 	}
@@ -530,7 +530,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 
 		private void playGameOverSound() {
 			try {
-				File gameOversfx = new File("sfx\\gameOver.wav");
+				File gameOversfx = new File("src\\sfx\\gameOver.wav");
 				AudioInputStream gameOverStream = AudioSystem.getAudioInputStream(gameOversfx);
 				gameOverSound = AudioSystem.getClip();
 				gameOverSound.open(gameOverStream);
@@ -588,7 +588,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 
 		private void playScoreUpSound() {
 			try {
-				File scoreUpsfx = new File("sfx\\scoreUp.wav");
+				File scoreUpsfx = new File("src\\sfx\\scoreUp.wav");
 				AudioInputStream scoreStream = AudioSystem.getAudioInputStream(scoreUpsfx);
 				scoreSound = AudioSystem.getClip();
 				scoreSound.open(scoreStream);
@@ -602,11 +602,11 @@ public class DinoFrame extends JFrame implements KeyListener {
 
 	private void changeBackground() {
 		if(day){
-			this.setContentPane(new JLabel(new ImageIcon("textures\\background.png")));
+			this.setContentPane(new JLabel(new ImageIcon("src\\textures\\background.png")));
 			day = false;
 		}
 		else{
-			this.setContentPane(new JLabel(new ImageIcon("textures\\backgroundNight.png")));
+			this.setContentPane(new JLabel(new ImageIcon("src\\textures\\backgroundNight.png")));
 			day = true;
 		}
 		this.add(dino);
@@ -886,24 +886,24 @@ public class DinoFrame extends JFrame implements KeyListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (!walk && !jump && !crouch) {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStandLeft.png"));
+				dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStandLeft.png"));
 				walk = true;
 			} else if (walk && !jump && !crouch) {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStandRight.png"));
+				dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStandRight.png"));
 				walk = false;
 			} else if (jump || onAir) {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoStand.png"));
+				dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoStand.png"));
 				walk = false;
 			} else if (crouch && !walk && !onAir) {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuckLeft.png"));
+				dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoDuckLeft.png"));
 				walk = true;
 			} else if (crouch && walk && !onAir) {
-				dino.setIcon(new javax.swing.ImageIcon("textures\\dinoDuckRight.png"));
+				dino.setIcon(new javax.swing.ImageIcon("src\\textures\\dinoDuckRight.png"));
 				walk = false;
 			}
 			if (flap) {
-				aboveBird.setIcon(new javax.swing.ImageIcon("textures\\bird.png"));
-				belowBird.setIcon(new javax.swing.ImageIcon("textures\\bird.png"));
+				aboveBird.setIcon(new javax.swing.ImageIcon("src\\textures\\bird.png"));
+				belowBird.setIcon(new javax.swing.ImageIcon("src\\textures\\bird.png"));
 				// continues to obstacle5
 				if (obstacle1.getIcon() == birdImage) {
 					obstacle1.setIcon(birdFlapImage);
@@ -922,8 +922,8 @@ public class DinoFrame extends JFrame implements KeyListener {
 				}
 				flap = false;
 			} else {
-				aboveBird.setIcon(new javax.swing.ImageIcon("textures\\birdFlap.png"));
-				belowBird.setIcon(new javax.swing.ImageIcon("textures\\birdFlap.png"));
+				aboveBird.setIcon(new javax.swing.ImageIcon("src\\textures\\birdFlap.png"));
+				belowBird.setIcon(new javax.swing.ImageIcon("src\\textures\\birdFlap.png"));
 				if (obstacle1.getIcon() == birdFlapImage) {
 					obstacle1.setIcon(birdImage);
 				}
