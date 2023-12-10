@@ -68,9 +68,12 @@ public class DinoFrame extends JFrame implements KeyListener {
 	boolean soundJump = false;
 	boolean day;
 
-	// score
+	// hud
 	JLabel scoreDisplay = new JLabel();
 	int score;
+        JLabel nameDisplay = new JLabel();
+        DinoJumpMenu dj = new DinoJumpMenu();
+        String name = dj.getName();
 
 	// entity borders
 	JLabel dinoBorder = new JLabel();
@@ -296,6 +299,7 @@ public class DinoFrame extends JFrame implements KeyListener {
 		}
 		day = true;
 		changeBackground();
+                System.out.println(name);
 	}
 
 	private void setVolume(float volume) {

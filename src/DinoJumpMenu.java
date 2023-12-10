@@ -14,7 +14,8 @@ import javax.swing.JTextPane;
 
 public class DinoJumpMenu extends javax.swing.JFrame {
 
-    private DinosaurGame dinosaurGame;
+    public DinosaurGame dinosaurGame;
+    private String name;
     private JLabel nameLabel;
     ImageIcon logo = new ImageIcon("src\\textures\\icon.jpg");
 
@@ -60,7 +61,7 @@ public class DinoJumpMenu extends javax.swing.JFrame {
 
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ICON3dinasour.jpg"))); // NOI18N
         jLabel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        jPanel6.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, -1, -1));
+        jPanel6.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 100, -1, -1));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clou.png"))); // NOI18N
         jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 170, 80, 50));
@@ -154,10 +155,11 @@ public class DinoJumpMenu extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("        Dinosaur Name: T-rex");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Dinosaur Name: T-rex");
         jLabel1.setAlignmentY(0.7F);
         jLabel1.setPreferredSize(new java.awt.Dimension(136, 13));
-        jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 30, 360, 46));
+        jPanel6.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 30, 410, 46));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -217,9 +219,19 @@ public class DinoJumpMenu extends javax.swing.JFrame {
     private void updateNameLabel() {
         if (nameLabel != null) {
             nameLabel.setText("Dinosaur Name: " + dinosaurGame.getDinosaurName());
+            jLabel1.setText("Dinosaur Name: " + dinosaurGame.getDinosaurName());
+            setName(dinosaurGame.getDinosaurName());
         }
     }
 
+    public String getName(){
+        return name;
+    }
+    
+    public void setName(String n){
+        this.name = n;
+    }
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 
         System.exit(0);
